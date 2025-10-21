@@ -28,6 +28,10 @@
         <!-- Login Section -->
         <div id="login-section" class="bg-white p-8 rounded-xl shadow-lg max-w-md mx-auto fade-in">
             <div class="text-center mb-8">
+                <!-- LOGO UPDATED HERE -->
+                <div class="inline-block mb-4">
+                    <img src="logo.jpg" alt="Taingo Integrated Logo" class="w-24 h-24 mx-auto">
+                </div>
                 <h1 class="text-3xl font-bold text-gray-800">App Portal Login</h1>
                 <p class="text-gray-500 mt-2">Please sign in to access your apps.</p>
             </div>
@@ -55,9 +59,15 @@
         <!-- Apps Dashboard Section (Hidden by default) -->
         <div id="apps-dashboard" class="hidden fade-in">
             <header class="bg-white p-6 rounded-xl shadow-lg mb-8 flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-800">Welcome to Your Dashboard</h1>
-                    <p class="text-gray-500 mt-1">Here are your available applications.</p>
+                <div class="flex items-center">
+                    <!-- LOGO UPDATED HERE -->
+                    <div class="mr-4">
+                         <img src="logo.jpg" alt="Taingo Integrated Logo" class="w-12 h-12">
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">Welcome to Your Dashboard</h1>
+                        <p class="text-gray-500 mt-1">Here are your available applications.</p>
+                    </div>
                 </div>
                 <button id="logout-button" class="bg-red-500 text-white font-semibold px-5 py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-300">
                     Logout
@@ -102,7 +112,7 @@
                     <button class="w-full bg-gray-800 text-white font-semibold py-2 rounded-lg hover:bg-gray-900 transition duration-300">Launch App</button>
                 </div>
 
-                <!-- NEW: App Card 4: Monday.com -->
+                <!-- App Card 4: Monday.com -->
                 <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                     <div class="flex items-center mb-4">
                         <div class="bg-purple-100 p-3 rounded-full">
@@ -111,8 +121,21 @@
                         <h2 class="text-xl font-bold text-gray-800 ml-4">Connect to Monday.com</h2>
                     </div>
                     <p class="text-gray-600 mb-4">Integrate with your Monday.com boards and bring your workflows here.</p>
-                    <!-- This is an anchor tag styled like a button -->
                     <a href="https://monday.com/login" target="_blank" rel="noopener noreferrer" class="block text-center w-full bg-blue-800 text-white font-semibold py-2 rounded-lg hover:bg-blue-900 transition duration-300">
+                        Connect
+                    </a>
+                </div>
+
+                <!-- App Card 5: HubSpot -->
+                <div class="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-orange-100 p-3 rounded-full">
+                            <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-800 ml-4">Connect to HubSpot</h2>
+                    </div>
+                    <p class="text-gray-600 mb-4">Access your marketing, sales, and customer service software.</p>
+                    <a href="https://app.hubspot.com/login" target="_blank" rel="noopener noreferrer" class="block text-center w-full bg-orange-600 text-white font-semibold py-2 rounded-lg hover:bg-orange-700 transition duration-300">
                         Connect
                     </a>
                 </div>
@@ -175,3 +198,5 @@
     </script>
 </body>
 </html>
+
+
