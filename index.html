@@ -23,7 +23,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .day-cell {
-            min-height: 100px;
+            min-height: 100px; 
         }
         .completed {
             text-decoration: line-through;
@@ -95,20 +95,21 @@
                     <p class="text-gray-700 mb-4">Manage collaborative tasks and to-do lists in real-time with your team.</p>
                     <button id="launch-project-btn" class="w-full bg-purple-600 text-white font-semibold py-2 rounded-lg hover:bg-purple-700 transition shadow-md">Launch App</button>
                 </div>
-                <!-- HubSpot Card (Placeholder) -->
+                <!-- CRM Access Card (NOW FUNCTIONAL) -->
                 <div class="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                     <div class="flex items-center mb-4">
                         <div class="bg-orange-100 p-3 rounded-full">
-                            <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <!-- CRM Icon (Users) -->
+                            <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20h-5v-2a3 3 0 00-5.356-1.857M9 20V8m3-4a1 1 0 00-1-1H4a1 1 0 00-1 1v12a1 1 0 001 1h5a1 1 0 001-1v-2m10-8h2a2 2 0 012 2v8a2 2 0 01-2 2h-2m-9-10V3l-3 3m10 4V3l-3 3"></path></svg>
                         </div>
-                        <h2 class="text-xl font-bold text-gray-800 ml-4">CRM Access</h2>
+                        <h2 class="text-xl font-bold text-gray-800 ml-4">CRM Contacts</h2>
                     </div>
-                    <p class="text-gray-700 mb-4">Access customer relationship management tools (Placeholder).</p>
-                    <a href="#" class="block text-center w-full bg-gray-400 text-white font-semibold py-2 rounded-lg cursor-not-allowed opacity-75">Connect</a>
+                    <p class="text-gray-700 mb-4">Access and manage shared customer relationship contacts in real-time.</p>
+                    <button id="launch-crm-btn" class="w-full bg-orange-600 text-white font-semibold py-2 rounded-lg hover:bg-orange-700 transition shadow-md">Launch App</button>
                 </div>
             </div>
         </div>
-
+        
         <!-- Shared Calendar Section -->
         <div id="calendar-section" class="hidden fade-in w-full max-w-4xl mx-auto">
             <header class="bg-white/95 backdrop-blur-sm p-6 rounded-xl shadow-xl mb-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
@@ -127,7 +128,7 @@
             </div>
         </div>
 
-        <!-- Project Manager Section (NEW) -->
+        <!-- Project Manager Section -->
         <div id="project-manager-section" class="hidden fade-in w-full max-w-lg mx-auto">
             <header class="bg-white/95 backdrop-blur-sm p-6 rounded-xl shadow-xl mb-8 flex justify-between items-center">
                 <button id="back-to-dashboard-btn-2" class="bg-gray-200 text-gray-800 font-semibold px-5 py-2 rounded-lg hover:bg-gray-300 transition shadow-md">&larr; Dashboard</button>
@@ -140,11 +141,35 @@
                     <input type="text" id="project-task-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="Add a new team task...">
                     <button id="add-project-btn" class="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition font-semibold shadow-md flex-shrink-0">Add</button>
                 </div>
-
+                
                 <!-- Task List -->
                 <div id="project-task-list" class="space-y-3">
                     <!-- Tasks will be injected here -->
                     <p class="text-gray-500 text-center py-4">Loading tasks...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CRM Contacts Section (NEW) -->
+        <div id="crm-section" class="hidden fade-in w-full max-w-xl mx-auto">
+            <header class="bg-white/95 backdrop-blur-sm p-6 rounded-xl shadow-xl mb-8 flex justify-between items-center">
+                <button id="back-to-dashboard-btn-3" class="bg-gray-200 text-gray-800 font-semibold px-5 py-2 rounded-lg hover:bg-gray-300 transition shadow-md">&larr; Dashboard</button>
+                <h2 class="text-2xl font-bold text-orange-700">Shared CRM Contacts</h2>
+            </header>
+
+            <div class="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-6">
+                <!-- Add Contact Form -->
+                <div class="mb-6 space-y-3 p-4 border border-orange-200 rounded-lg bg-orange-50">
+                    <h3 class="font-bold text-lg text-orange-800">Add New Contact</h3>
+                    <input type="text" id="crm-name-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" placeholder="Contact Name" required>
+                    <input type="email" id="crm-email-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" placeholder="Contact Email" required>
+                    <button id="add-contact-btn" class="w-full bg-orange-600 text-white px-4 py-3 rounded-lg hover:bg-orange-700 transition font-semibold shadow-md">Add Contact</button>
+                </div>
+                
+                <!-- Contact List -->
+                <div id="crm-contact-list" class="space-y-3">
+                    <!-- Contacts will be injected here -->
+                    <p class="text-gray-500 text-center py-4">Loading contacts...</p>
                 </div>
             </div>
         </div>
@@ -174,12 +199,12 @@
             </div>
         </div>
     </div>
-
+    
     <!-- Firebase SDK and Application Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         // --- REALTIME DATABASE IMPORTS ---
-        import { getDatabase, ref, push, set, update, remove, onValue, serverTimestamp as rtdbServerTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getDatabase, ref, push, update, remove, onValue, serverTimestamp as rtdbServerTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
         // --- AUTH IMPORTS (UNCHANGED) ---
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
@@ -188,6 +213,7 @@
         const appsDashboard = document.getElementById('apps-dashboard');
         const calendarSection = document.getElementById('calendar-section');
         const projectManagerSection = document.getElementById('project-manager-section');
+        const crmSection = document.getElementById('crm-section'); // NEW CRM SECTION REF
         const loginForm = document.getElementById('login-form');
         const logoutButton = document.getElementById('logout-button');
         const errorMessage = document.getElementById('error-message');
@@ -215,6 +241,14 @@
         const projectTaskInput = document.getElementById('project-task-input');
         const addProjectBtn = document.getElementById('add-project-btn');
         const projectTaskList = document.getElementById('project-task-list');
+        
+        // CRM Refs (NEW)
+        const launchCrmBtn = document.getElementById('launch-crm-btn');
+        const backToDashboardBtn3 = document.getElementById('back-to-dashboard-btn-3');
+        const crmNameInput = document.getElementById('crm-name-input');
+        const crmEmailInput = document.getElementById('crm-email-input');
+        const addContactBtn = document.getElementById('add-contact-btn');
+        const crmContactList = document.getElementById('crm-contact-list');
 
         const notification = document.getElementById('notification');
 
@@ -222,8 +256,9 @@
         let currentDate = new Date();
         let events = [];
         let projects = [];
+        let contacts = []; // NEW CRM STATE
         let selectedDate = null;
-        let database; // Renamed from 'db' for clarity with Realtime Database
+        let database; 
         let auth;
         let eventToDeleteId = null;
 
@@ -249,7 +284,7 @@
                 }
 
                 const app = initializeApp(firebaseConfig);
-                database = getDatabase(app); // Initializing Realtime Database
+                database = getDatabase(app); 
                 auth = getAuth(app);
 
                 // Authenticate (anonymously or with custom token)
@@ -266,15 +301,13 @@
 
                 // --- Calendar Listener (Realtime Database) ---
                 const eventsRefPath = `/artifacts/${appId}/public/data/calendarEvents`;
-                const eventsDbRef = ref(database, eventsRefPath); // Get a reference to the events path
+                const eventsDbRef = ref(database, eventsRefPath); 
 
-                onValue(eventsDbRef, (snapshot) => { // Use onValue for RTDB
-                    const data = snapshot.val(); // Get all data at this ref as an object
-                    events = []; // Reset events array
+                onValue(eventsDbRef, (snapshot) => { 
+                    const data = snapshot.val(); 
+                    events = []; 
                     if (data) {
-                        // Iterate through the object to reconstruct the array with IDs
                         Object.keys(data).forEach(key => {
-                            // RTDB serverTimestamp resolves to a number (milliseconds since epoch)
                             const createdAt = data[key].createdAt ? { seconds: Math.floor(data[key].createdAt / 1000) } : null;
                             events.push({ id: key, ...data[key], createdAt: createdAt });
                         });
@@ -300,19 +333,17 @@
 
                 // --- Project Manager Listener (Realtime Database) ---
                 const projectsRefPath = `/artifacts/${appId}/public/data/projects`;
-                const projectsDbRef = ref(database, projectsRefPath); // Get a reference to the projects path
+                const projectsDbRef = ref(database, projectsRefPath); 
 
-                onValue(projectsDbRef, (snapshot) => { // Use onValue for RTDB
-                    const data = snapshot.val(); // Get all data at this ref as an object
-                    projects = []; // Reset projects array
+                onValue(projectsDbRef, (snapshot) => { 
+                    const data = snapshot.val(); 
+                    projects = []; 
                     if (data) {
-                        // Iterate through the object to reconstruct the array with IDs
                         Object.keys(data).forEach(key => {
                              const createdAt = data[key].createdAt ? { seconds: Math.floor(data[key].createdAt / 1000) } : null;
                              projects.push({ id: key, ...data[key], createdAt: createdAt });
                         });
                     }
-                    // Sort by completion status (incomplete first) then by creation time
                     projects.sort((a, b) => {
                         if (a.completed !== b.completed) {
                             return a.completed ? 1 : -1;
@@ -332,6 +363,30 @@
                     console.error("Realtime Database Error (Projects):", error);
                     showNotification("Failed to fetch project tasks: Connection error.");
                 });
+                
+                // --- CRM Contacts Listener (NEW) ---
+                const contactsRefPath = `/artifacts/${appId}/public/data/crmContacts`;
+                const contactsDbRef = ref(database, contactsRefPath); 
+
+                onValue(contactsDbRef, (snapshot) => { 
+                    const data = snapshot.val(); 
+                    contacts = []; 
+                    if (data) {
+                        Object.keys(data).forEach(key => {
+                             const createdAt = data[key].createdAt ? { seconds: Math.floor(data[key].createdAt / 1000) } : null;
+                             contacts.push({ id: key, ...data[key], createdAt: createdAt });
+                        });
+                    }
+                    // Sort contacts by name
+                    contacts.sort((a, b) => a.name.localeCompare(b.name));
+
+                    if (!crmSection.classList.contains('hidden')) {
+                         renderContacts();
+                    }
+                }, (error) => {
+                    console.error("Realtime Database Error (CRM):", error);
+                    showNotification("Failed to fetch CRM contacts: Connection error.");
+                });
 
             } catch (error) {
                 console.error("Error initializing Firebase:", error);
@@ -349,6 +404,7 @@
                 loginSection.classList.add('hidden');
                 calendarSection.classList.add('hidden');
                 projectManagerSection.classList.add('hidden');
+                crmSection.classList.add('hidden'); // Hide new section
                 appsDashboard.classList.remove('hidden');
                 errorMessage.classList.add('hidden');
             } else {
@@ -360,6 +416,7 @@
             appsDashboard.classList.add('hidden');
             calendarSection.classList.add('hidden');
             projectManagerSection.classList.add('hidden');
+            crmSection.classList.add('hidden'); // Hide new section
             loginSection.classList.remove('hidden');
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
@@ -369,6 +426,7 @@
         launchCalendarBtn.addEventListener('click', () => {
             appsDashboard.classList.add('hidden');
             projectManagerSection.classList.add('hidden');
+            crmSection.classList.add('hidden'); // Hide new section
             calendarSection.classList.remove('hidden');
             renderCalendar();
         });
@@ -377,9 +435,20 @@
         launchProjectBtn.addEventListener('click', () => {
             appsDashboard.classList.add('hidden');
             calendarSection.classList.add('hidden');
+            crmSection.classList.add('hidden'); // Hide new section
             projectManagerSection.classList.remove('hidden');
             renderProjects();
         });
+
+        // Navigate to CRM (NEW)
+        launchCrmBtn.addEventListener('click', () => {
+            appsDashboard.classList.add('hidden');
+            calendarSection.classList.add('hidden');
+            projectManagerSection.classList.add('hidden');
+            crmSection.classList.remove('hidden');
+            renderContacts();
+        });
+
 
         // Back button from Calendar
         backToDashboardBtn.addEventListener('click', () => {
@@ -392,9 +461,15 @@
             projectManagerSection.classList.add('hidden');
             appsDashboard.classList.remove('hidden');
         });
+        
+        // Back button from CRM (NEW)
+        backToDashboardBtn3.addEventListener('click', () => {
+            crmSection.classList.add('hidden');
+            appsDashboard.classList.remove('hidden');
+        });
 
 
-        // --- CALENDAR LOGIC (UNCHANGED) ---
+        // --- CALENDAR LOGIC (CORRECTED CSS) ---
         function renderCalendar() {
             if (!calendarGrid) return;
 
@@ -431,7 +506,7 @@
                 const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
 
                 let dayClasses = 'border border-gray-300 rounded-lg p-2 sm:p-3 flex flex-col day-cell cursor-pointer transition hover:shadow-lg hover:border-teal-400 bg-white';
-                if(isToday) dayClasses += ' border-teal-500 ring-2 ring-300 bg-teal-50/50'; // Fixed ring-300 to ring-teal-300
+                if(isToday) dayClasses += ' border-teal-500 ring-2 ring-teal-300 bg-teal-50/50';
 
                 calendarGrid.insertAdjacentHTML('beforeend', `
                     <div class="${dayClasses}" data-date="${dateStr}">
@@ -488,7 +563,7 @@
         // --- CALENDAR REALTIME DATABASE FUNCTIONS ---
         async function addEvent() {
             const title = eventTitleInput.value.trim();
-            if (!database || !auth) { // Use 'database'
+            if (!database || !auth) { 
                  showNotification("Cannot save event. Database connection failed.");
                  return;
             }
@@ -496,10 +571,10 @@
                 try {
                     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                     const eventsDbRef = ref(database, `/artifacts/${appId}/public/data/calendarEvents`);
-                    await push(eventsDbRef, { // Use push and set for RTDB
+                    await push(eventsDbRef, { 
                         date: selectedDate,
                         title: title,
-                        createdAt: rtdbServerTimestamp() // Use RTDB's server timestamp
+                        createdAt: rtdbServerTimestamp() 
                     });
                     eventModal.classList.add('hidden');
                     showNotification("Event added successfully!", false);
@@ -513,14 +588,14 @@
         }
 
         async function deleteEvent(eventId) {
-            if (!database || !auth) { // Use 'database'
+            if (!database || !auth) { 
                  showNotification("Cannot delete event. Database connection failed.");
                  return;
             }
              try {
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                 const eventItemRef = ref(database, `/artifacts/${appId}/public/data/calendarEvents/${eventId}`);
-                await remove(eventItemRef); // Use remove for RTDB
+                await remove(eventItemRef); 
                 showNotification("Event deleted successfully!", false);
             } catch (e) {
                 console.error("Error deleting event from RTDB: ", e);
@@ -575,7 +650,7 @@
         // --- PROJECT MANAGER REALTIME DATABASE FUNCTIONS ---
         async function addProject() {
             const title = projectTaskInput.value.trim();
-            if (!database || !auth) { // Use 'database'
+            if (!database || !auth) { 
                  showNotification("Cannot save task. Database connection failed.");
                  return;
             }
@@ -583,10 +658,10 @@
                 try {
                     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                     const projectsDbRef = ref(database, `/artifacts/${appId}/public/data/projects`);
-                    await push(projectsDbRef, { // Use push and set for RTDB
+                    await push(projectsDbRef, { 
                         title: title,
                         completed: false,
-                        createdAt: rtdbServerTimestamp() // Use RTDB's server timestamp
+                        createdAt: rtdbServerTimestamp() 
                     });
                     projectTaskInput.value = '';
                     showNotification("Task added successfully!", false);
@@ -600,14 +675,14 @@
         }
 
         async function deleteProject(projectId) {
-            if (!database || !auth) { // Use 'database'
+            if (!database || !auth) { 
                  showNotification("Cannot delete task. Database connection failed.");
                  return;
             }
              try {
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                 const projectItemRef = ref(database, `/artifacts/${appId}/public/data/projects/${projectId}`);
-                await remove(projectItemRef); // Use remove for RTDB
+                await remove(projectItemRef); 
                 showNotification("Task deleted successfully!", false);
             } catch (e) {
                 console.error("Error deleting project from RTDB: ", e);
@@ -616,22 +691,103 @@
         }
 
         async function toggleProjectCompleted(projectId, completedStatus) {
-            if (!database || !auth) { // Use 'database'
+            if (!database || !auth) { 
                  showNotification("Cannot update task. Database connection failed.");
                  return;
             }
             try {
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                 const projectItemRef = ref(database, `/artifacts/${appId}/public/data/projects/${projectId}`);
-                await update(projectItemRef, { // Use update for RTDB
+                await update(projectItemRef, { 
                     completed: completedStatus
                 });
-                // No notification needed for a simple toggle, as the snapshot listener handles the UI update
             } catch (e) {
                 console.error("Error toggling completion in RTDB: ", e);
                 showNotification("Failed to update task status: Connection error.");
             }
         }
+
+        // --- CRM LOGIC (NEW) ---
+        function renderContacts() {
+            if (!crmContactList) return;
+
+            if (contacts.length === 0) {
+                crmContactList.innerHTML = '<p class="text-gray-500 text-center py-4">No contacts saved yet.</p>';
+                return;
+            }
+
+            crmContactList.innerHTML = contacts.map(contact => `
+                <div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-md border border-gray-200">
+                    <div class="flex flex-col flex-grow">
+                        <span class="text-gray-800 font-bold text-lg">${contact.name}</span>
+                        <span class="text-orange-600 text-sm italic">${contact.email}</span>
+                    </div>
+                    <button data-id="${contact.id}" data-action="delete-contact" class="text-red-500 hover:text-red-700 font-bold p-1 rounded-full transition-colors ml-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // CRM Event Listeners
+        addContactBtn.addEventListener('click', addContact);
+        crmEmailInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addContact();
+        });
+        
+        crmContactList.addEventListener('click', (e) => {
+            const button = e.target.closest('[data-action="delete-contact"]');
+            if (button) {
+                deleteContact(button.dataset.id);
+            }
+        });
+
+        // --- CRM REALTIME DATABASE FUNCTIONS ---
+        async function addContact() {
+            const name = crmNameInput.value.trim();
+            const email = crmEmailInput.value.trim();
+            
+            if (!database || !auth) { 
+                 showNotification("Cannot save contact. Database connection failed.");
+                 return;
+            }
+            if (name && email) {
+                try {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    const contactsDbRef = ref(database, `/artifacts/${appId}/public/data/crmContacts`);
+                    await push(contactsDbRef, { 
+                        name: name,
+                        email: email,
+                        createdAt: rtdbServerTimestamp() 
+                    });
+                    crmNameInput.value = '';
+                    crmEmailInput.value = '';
+                    showNotification("Contact added successfully!", false);
+                } catch (e) {
+                    console.error("Error adding contact to RTDB: ", e);
+                    showNotification("Failed to add contact: Connection error.");
+                }
+            } else {
+                showNotification("Please enter both a name and an email.");
+            }
+        }
+
+        async function deleteContact(contactId) {
+            if (!database || !auth) { 
+                 showNotification("Cannot delete contact. Database connection failed.");
+                 return;
+            }
+             try {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const contactItemRef = ref(database, `/artifacts/${appId}/public/data/crmContacts/${contactId}`);
+                await remove(contactItemRef); 
+                showNotification("Contact deleted successfully!", false);
+            } catch (e) {
+                console.error("Error deleting contact from RTDB: ", e);
+                showNotification("Failed to delete contact: Connection error.");
+            }
+        }
+
 
         // Initialize the app on page load
         initializeFirebase();
