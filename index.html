@@ -263,6 +263,13 @@
         let eventToDeleteId = null;
 
         // --- UTILITIES ---
+        function getSanitizedAppId() {
+            let appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            // Sanitize for Realtime Database paths: replace '.', '#', '$', '[', or ']' with '-'
+            // This fixes the path error experienced during initialization.
+            return appId.replace(/[.#$[\]]/g, '-'); 
+        }
+        
         function showNotification(message, isError = true) {
             notification.textContent = message;
             notification.className = `fixed top-5 right-5 text-white py-3 px-5 rounded-lg shadow-xl fade-in z-50 ${isError ? 'bg-red-500' : 'bg-green-500'}`;
@@ -276,7 +283,7 @@
         async function initializeFirebase() {
             try {
                 const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const appId = getSanitizedAppId(); // USE SANITIZED APP ID HERE
 
                 if (!firebaseConfig.apiKey) {
                     showNotification("Database services are unavailable: Firebase config missing.");
@@ -300,7 +307,7 @@
                 }
 
                 // --- Calendar Listener (Realtime Database) ---
-                const eventsRefPath = `/artifacts/${appId}/public/data/calendarEvents`;
+                const eventsRefPath = `/artifacts/${appId}/public/data/calendarEvents`; 
                 const eventsDbRef = ref(database, eventsRefPath); 
 
                 onValue(eventsDbRef, (snapshot) => { 
@@ -332,7 +339,7 @@
 
 
                 // --- Project Manager Listener (Realtime Database) ---
-                const projectsRefPath = `/artifacts/${appId}/public/data/projects`;
+                const projectsRefPath = `/artifacts/${appId}/public/data/projects`; 
                 const projectsDbRef = ref(database, projectsRefPath); 
 
                 onValue(projectsDbRef, (snapshot) => { 
@@ -365,7 +372,7 @@
                 });
                 
                 // --- CRM Contacts Listener (NEW) ---
-                const contactsRefPath = `/artifacts/${appId}/public/data/crmContacts`;
+                const contactsRefPath = `/artifacts/${appId}/public/data/crmContacts`; 
                 const contactsDbRef = ref(database, contactsRefPath); 
 
                 onValue(contactsDbRef, (snapshot) => { 
@@ -569,7 +576,7 @@
             }
             if (title && selectedDate) {
                 try {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    const appId = getSanitizedAppId(); // USE SANITIZED APP ID HERE
                     const eventsDbRef = ref(database, `/artifacts/${appId}/public/data/calendarEvents`);
                     await push(eventsDbRef, { 
                         date: selectedDate,
@@ -593,7 +600,7 @@
                  return;
             }
              try {
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const appId = getSanitizedAppId(); // USE SANITIZED APP ID HERE
                 const eventItemRef = ref(database, `/artifacts/${appId}/public/data/calendarEvents/${eventId}`);
                 await remove(eventItemRef); 
                 showNotification("Event deleted successfully!", false);
@@ -656,7 +663,7 @@
             }
             if (title) {
                 try {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    const appId = getSanitizedAppId(); // USE SANITIZED APP ID HERE
                     const projectsDbRef = ref(database, `/artifacts/${appId}/public/data/projects`);
                     await push(projectsDbRef, { 
                         title: title,
@@ -680,7 +687,7 @@
                  return;
             }
              try {
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const appId = getSanitizedAppId(); // USE SANITIZED APP ID HERE
                 const projectItemRef = ref(database, `/artifacts/${appId}/public/data/projects/${projectId}`);
                 await remove(projectItemRef); 
                 showNotification("Task deleted successfully!", false);
@@ -696,7 +703,7 @@
                  return;
             }
             try {
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const appId = getSanitizedAppId(); // USE SANITIZED APP ID HERE
                 const projectItemRef = ref(database, `/artifacts/${appId}/public/data/projects/${projectId}`);
                 await update(projectItemRef, { 
                     completed: completedStatus
@@ -753,7 +760,7 @@
             }
             if (name && email) {
                 try {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    const appId = getSanitizedAppId(); // USE SANITIZED APP ID HERE
                     const contactsDbRef = ref(database, `/artifacts/${appId}/public/data/crmContacts`);
                     await push(contactsDbRef, { 
                         name: name,
@@ -778,7 +785,7 @@
                  return;
             }
              try {
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const appId = getSanitizedAppId(); // USE SANITIZED APP ID HERE
                 const contactItemRef = ref(database, `/artifacts/${appId}/public/data/crmContacts/${contactId}`);
                 await remove(contactItemRef); 
                 showNotification("Contact deleted successfully!", false);
@@ -795,4 +802,5 @@
     </script>
 </body>
 </html>
+
 
