@@ -66,6 +66,8 @@
                 <div>
                     <h1 class="text-3xl font-bold text-gray-800">Welcome to Your Dashboard</h1>
                     <p class="text-gray-600 mt-1">Select an application to launch.</p>
+                    <!-- NEW: User ID Display -->
+                    <p class="text-xs text-gray-500 mt-2">Authenticated User ID: <span id="user-id-display" class="font-mono text-gray-700 bg-gray-100 px-2 py-0.5 rounded">Loading...</span></p>
                 </div>
                 <button id="logout-button" class="bg-red-500 text-white font-semibold px-5 py-2 rounded-lg hover:bg-red-600 transition shadow-md">Logout</button>
             </header>
@@ -183,12 +185,13 @@
         const loginSection = document.getElementById('login-section');
         const appsDashboard = document.getElementById('apps-dashboard');
         const calendarSection = document.getElementById('calendar-section');
-        const projectManagerSection = document.getElementById('project-manager-section'); // NEW REF
+        const projectManagerSection = document.getElementById('project-manager-section'); 
         const loginForm = document.getElementById('login-form');
         const logoutButton = document.getElementById('logout-button');
         const errorMessage = document.getElementById('error-message');
         const launchCalendarBtn = document.getElementById('launch-calendar-btn');
         const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
+        const userIdDisplay = document.getElementById('user-id-display'); // NEW REF
         
         // Calendar Refs
         const monthYearEl = document.getElementById('month-year');
@@ -204,7 +207,7 @@
         const cancelConfirmBtn = document.getElementById('cancel-confirm-btn');
         const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
         
-        // Project Manager Refs (NEW)
+        // Project Manager Refs
         const launchProjectBtn = document.getElementById('launch-project-btn');
         const backToDashboardBtn2 = document.getElementById('back-to-dashboard-btn-2');
         const projectTaskInput = document.getElementById('project-task-input');
@@ -216,7 +219,7 @@
         // --- APP STATE ---
         let currentDate = new Date();
         let events = [];
-        let projects = []; // NEW STATE
+        let projects = []; 
         let selectedDate = null;
         let db;
         let auth;
@@ -253,6 +256,11 @@
                 } else {
                     await signInAnonymously(auth);
                 }
+
+                // Display the authenticated user ID for confirmation
+                if (auth.currentUser && userIdDisplay) {
+                    userIdDisplay.textContent = auth.currentUser.uid || 'Anonymous';
+                }
                 
                 // --- Calendar Listener ---
                 const eventsCollectionPath = `/artifacts/${appId}/public/data/calendarEvents`;
@@ -278,7 +286,7 @@
                 });
 
 
-                // --- Project Manager Listener (NEW) ---
+                // --- Project Manager Listener ---
                 const projectsCollectionPath = `/artifacts/${appId}/public/data/projects`;
                 const projectsCollection = collection(db, projectsCollectionPath);
 
@@ -319,7 +327,7 @@
             if (username === 'user' && password === 'password') {
                 loginSection.classList.add('hidden');
                 calendarSection.classList.add('hidden'); 
-                projectManagerSection.classList.add('hidden'); // Hide new section
+                projectManagerSection.classList.add('hidden'); 
                 appsDashboard.classList.remove('hidden');
                 errorMessage.classList.add('hidden');
             } else {
@@ -344,7 +352,7 @@
             renderCalendar(); 
         });
 
-        // Navigate to Project Manager (NEW)
+        // Navigate to Project Manager 
         launchProjectBtn.addEventListener('click', () => {
             appsDashboard.classList.add('hidden');
             calendarSection.classList.add('hidden');
@@ -358,7 +366,7 @@
             appsDashboard.classList.remove('hidden');
         });
         
-        // Back button from Project Manager (NEW)
+        // Back button from Project Manager 
         backToDashboardBtn2.addEventListener('click', () => {
             projectManagerSection.classList.add('hidden');
             appsDashboard.classList.remove('hidden');
@@ -609,3 +617,4 @@
     </script>
 </body>
 </html>
+
