@@ -6,6 +6,17 @@
     <title>App Portal with Shared Calendar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- NEW: CONTENT SECURITY POLICY FIX FOR FIREBASE ON CLOUDFLARE -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self'; 
+        script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com;
+        connect-src 'self' wss://*.firebaseio.com https://*.googleapis.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        font-src 'self' https://fonts.gstatic.com;
+        img-src 'self' data: https://placehold.co/;
+        ">
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -831,5 +842,6 @@
     </script>
 </body>
 </html>
+
 
 
