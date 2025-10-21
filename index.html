@@ -163,6 +163,7 @@
                     <h3 class="font-bold text-lg text-orange-800">Add New Contact</h3>
                     <input type="text" id="crm-name-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" placeholder="Contact Name" required>
                     <input type="email" id="crm-email-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" placeholder="Contact Email" required>
+                    <input type="tel" id="crm-phone-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500" placeholder="Contact Phone (Optional)">
                     <button id="add-contact-btn" class="w-full bg-orange-600 text-white px-4 py-3 rounded-lg hover:bg-orange-700 transition font-semibold shadow-md">Add Contact</button>
                 </div>
                 
@@ -247,6 +248,7 @@
         const backToDashboardBtn3 = document.getElementById('back-to-dashboard-btn-3');
         const crmNameInput = document.getElementById('crm-name-input');
         const crmEmailInput = document.getElementById('crm-email-input');
+        const crmPhoneInput = document.getElementById('crm-phone-input');
         const addContactBtn = document.getElementById('add-contact-btn');
         const crmContactList = document.getElementById('crm-contact-list');
 
@@ -281,23 +283,41 @@
 
         // --- FIREBASE SETUP (Runs on initial load) ---
         async function initializeFirebase() {
+            let firebaseConfig = {};
             try {
-                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-                const appId = getSanitizedAppId(); // USE SANITIZED APP ID HERE
-
-                if (!firebaseConfig.apiKey) {
-                    showNotification("Database services are unavailable: Firebase config missing.");
-                    return;
+                // Check if the global variable exists and parse it.
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    firebaseConfig = JSON.parse(__firebase_config);
+                    console.log("Firebase Config Status: Successfully parsed configuration.");
+                } else {
+                    console.warn("Firebase Config Status: Global config variable is undefined or empty.");
                 }
+            } catch (error) {
+                console.error("Firebase Config Error: Failed to parse configuration JSON.", error);
+                // Fallback to show notification if config is bad JSON
+                showNotification("Configuration error: Check console for Firebase config details.");
+                return;
+            }
 
+            const appId = getSanitizedAppId();
+
+            if (!firebaseConfig.apiKey) {
+                console.error("Database services are unavailable: apiKey is missing from Firebase config.");
+                showNotification("Database services are unavailable: Firebase config missing.");
+                return;
+            }
+            
+            try {
                 const app = initializeApp(firebaseConfig);
                 database = getDatabase(app); 
                 auth = getAuth(app);
 
                 // Authenticate (anonymously or with custom token)
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    console.log("Authentication: Signing in with Custom Token.");
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
+                    console.log("Authentication: Signing in Anonymously.");
                     await signInAnonymously(auth);
                 }
 
@@ -728,6 +748,8 @@
                     <div class="flex flex-col flex-grow">
                         <span class="text-gray-800 font-bold text-lg">${contact.name}</span>
                         <span class="text-orange-600 text-sm italic">${contact.email}</span>
+                        <!-- Display Phone Number -->
+                        ${contact.phone ? `<span class="text-gray-500 text-xs mt-1">Phone: ${contact.phone}</span>` : ''}
                     </div>
                     <button data-id="${contact.id}" data-action="delete-contact" class="text-red-500 hover:text-red-700 font-bold p-1 rounded-full transition-colors ml-4">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -738,7 +760,11 @@
 
         // CRM Event Listeners
         addContactBtn.addEventListener('click', addContact);
+        // Updated listener to check both email and phone input for Enter keypress
         crmEmailInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addContact();
+        });
+        crmPhoneInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') addContact();
         });
         
@@ -749,10 +775,11 @@
             }
         });
 
-        // --- CRM REALTIME DATABASE FUNCTIONS ---
+        // --- CRM REALTIME DATABASE FUNCTIONS (UPDATED) ---
         async function addContact() {
             const name = crmNameInput.value.trim();
             const email = crmEmailInput.value.trim();
+            const phone = crmPhoneInput.value.trim(); // GET PHONE NUMBER
             
             if (!database || !auth) { 
                  showNotification("Cannot save contact. Database connection failed.");
@@ -765,10 +792,12 @@
                     await push(contactsDbRef, { 
                         name: name,
                         email: email,
+                        phone: phone, // SAVE PHONE NUMBER
                         createdAt: rtdbServerTimestamp() 
                     });
                     crmNameInput.value = '';
                     crmEmailInput.value = '';
+                    crmPhoneInput.value = ''; // CLEAR PHONE NUMBER INPUT
                     showNotification("Contact added successfully!", false);
                 } catch (e) {
                     console.error("Error adding contact to RTDB: ", e);
