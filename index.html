@@ -288,7 +288,7 @@
                 // Check if the global variable exists and parse it.
                 if (typeof __firebase_config !== 'undefined' && __firebase_config) {
                     firebaseConfig = JSON.parse(__firebase_config);
-                    console.log("Firebase Config Status: Successfully parsed configuration.");
+                    // console.log("Firebase Config Status: Successfully parsed configuration.");
                 } else {
                     console.warn("Firebase Config Status: Global config variable is undefined or empty.");
                 }
@@ -314,10 +314,10 @@
 
                 // Authenticate (anonymously or with custom token)
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    console.log("Authentication: Signing in with Custom Token.");
+                    // console.log("Authentication: Signing in with Custom Token.");
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
-                    console.log("Authentication: Signing in Anonymously.");
+                    // console.log("Authentication: Signing in Anonymously.");
                     await signInAnonymously(auth);
                 }
 
