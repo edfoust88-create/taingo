@@ -23,7 +23,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .day-cell {
-            min-height: 100px; 
+            min-height: 100px;
         }
         .completed {
             text-decoration: line-through;
@@ -108,7 +108,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Shared Calendar Section -->
         <div id="calendar-section" class="hidden fade-in w-full max-w-4xl mx-auto">
             <header class="bg-white/95 backdrop-blur-sm p-6 rounded-xl shadow-xl mb-8 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
@@ -140,7 +140,7 @@
                     <input type="text" id="project-task-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" placeholder="Add a new team task...">
                     <button id="add-project-btn" class="bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition font-semibold shadow-md flex-shrink-0">Add</button>
                 </div>
-                
+
                 <!-- Task List -->
                 <div id="project-task-list" class="space-y-3">
                     <!-- Tasks will be injected here -->
@@ -174,25 +174,27 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Firebase SDK and Application Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"; 
+        // --- REALTIME DATABASE IMPORTS ---
+        import { getDatabase, ref, push, set, update, remove, onValue, serverTimestamp as rtdbServerTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        // --- AUTH IMPORTS (UNCHANGED) ---
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
         // --- DOM ELEMENTS ---
         const loginSection = document.getElementById('login-section');
         const appsDashboard = document.getElementById('apps-dashboard');
         const calendarSection = document.getElementById('calendar-section');
-        const projectManagerSection = document.getElementById('project-manager-section'); 
+        const projectManagerSection = document.getElementById('project-manager-section');
         const loginForm = document.getElementById('login-form');
         const logoutButton = document.getElementById('logout-button');
         const errorMessage = document.getElementById('error-message');
         const launchCalendarBtn = document.getElementById('launch-calendar-btn');
         const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
-        const userIdDisplay = document.getElementById('user-id-display'); // NEW REF
-        
+        const userIdDisplay = document.getElementById('user-id-display');
+
         // Calendar Refs
         const monthYearEl = document.getElementById('month-year');
         const calendarGrid = document.getElementById('calendar-grid');
@@ -206,7 +208,7 @@
         const confirmModal = document.getElementById('confirm-modal');
         const cancelConfirmBtn = document.getElementById('cancel-confirm-btn');
         const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
-        
+
         // Project Manager Refs
         const launchProjectBtn = document.getElementById('launch-project-btn');
         const backToDashboardBtn2 = document.getElementById('back-to-dashboard-btn-2');
@@ -219,9 +221,9 @@
         // --- APP STATE ---
         let currentDate = new Date();
         let events = [];
-        let projects = []; 
+        let projects = [];
         let selectedDate = null;
-        let db;
+        let database; // Renamed from 'db' for clarity with Realtime Database
         let auth;
         let eventToDeleteId = null;
 
@@ -245,9 +247,9 @@
                     showNotification("Database services are unavailable: Firebase config missing.");
                     return;
                 }
-                
+
                 const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
+                database = getDatabase(app); // Initializing Realtime Database
                 auth = getAuth(app);
 
                 // Authenticate (anonymously or with custom token)
@@ -261,13 +263,22 @@
                 if (auth.currentUser && userIdDisplay) {
                     userIdDisplay.textContent = auth.currentUser.uid || 'Anonymous';
                 }
-                
-                // --- Calendar Listener ---
-                const eventsCollectionPath = `/artifacts/${appId}/public/data/calendarEvents`;
-                const eventsCollection = collection(db, eventsCollectionPath);
-                
-                onSnapshot(eventsCollection, (snapshot) => {
-                    events = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+                // --- Calendar Listener (Realtime Database) ---
+                const eventsRefPath = `/artifacts/${appId}/public/data/calendarEvents`;
+                const eventsDbRef = ref(database, eventsRefPath); // Get a reference to the events path
+
+                onValue(eventsDbRef, (snapshot) => { // Use onValue for RTDB
+                    const data = snapshot.val(); // Get all data at this ref as an object
+                    events = []; // Reset events array
+                    if (data) {
+                        // Iterate through the object to reconstruct the array with IDs
+                        Object.keys(data).forEach(key => {
+                            // RTDB serverTimestamp resolves to a number (milliseconds since epoch)
+                            const createdAt = data[key].createdAt ? { seconds: Math.floor(data[key].createdAt / 1000) } : null;
+                            events.push({ id: key, ...data[key], createdAt: createdAt });
+                        });
+                    }
                     events.sort((a, b) => {
                         if (a.date < b.date) return -1;
                         if (a.date > b.date) return 1;
@@ -282,16 +293,25 @@
                          renderCalendar();
                     }
                 }, (error) => {
-                    console.error("Firestore Error (Calendar):", error);
+                    console.error("Realtime Database Error (Calendar):", error);
+                    showNotification("Failed to fetch calendar events: Connection error.");
                 });
 
 
-                // --- Project Manager Listener ---
-                const projectsCollectionPath = `/artifacts/${appId}/public/data/projects`;
-                const projectsCollection = collection(db, projectsCollectionPath);
+                // --- Project Manager Listener (Realtime Database) ---
+                const projectsRefPath = `/artifacts/${appId}/public/data/projects`;
+                const projectsDbRef = ref(database, projectsRefPath); // Get a reference to the projects path
 
-                onSnapshot(projectsCollection, (snapshot) => {
-                    projects = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                onValue(projectsDbRef, (snapshot) => { // Use onValue for RTDB
+                    const data = snapshot.val(); // Get all data at this ref as an object
+                    projects = []; // Reset projects array
+                    if (data) {
+                        // Iterate through the object to reconstruct the array with IDs
+                        Object.keys(data).forEach(key => {
+                             const createdAt = data[key].createdAt ? { seconds: Math.floor(data[key].createdAt / 1000) } : null;
+                             projects.push({ id: key, ...data[key], createdAt: createdAt });
+                        });
+                    }
                     // Sort by completion status (incomplete first) then by creation time
                     projects.sort((a, b) => {
                         if (a.completed !== b.completed) {
@@ -309,7 +329,8 @@
                          renderProjects();
                     }
                 }, (error) => {
-                    console.error("Firestore Error (Projects):", error);
+                    console.error("Realtime Database Error (Projects):", error);
+                    showNotification("Failed to fetch project tasks: Connection error.");
                 });
 
             } catch (error) {
@@ -326,8 +347,8 @@
 
             if (username === 'user' && password === 'password') {
                 loginSection.classList.add('hidden');
-                calendarSection.classList.add('hidden'); 
-                projectManagerSection.classList.add('hidden'); 
+                calendarSection.classList.add('hidden');
+                projectManagerSection.classList.add('hidden');
                 appsDashboard.classList.remove('hidden');
                 errorMessage.classList.add('hidden');
             } else {
@@ -343,21 +364,21 @@
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
         });
-        
+
         // Navigate to Calendar
         launchCalendarBtn.addEventListener('click', () => {
             appsDashboard.classList.add('hidden');
             projectManagerSection.classList.add('hidden');
             calendarSection.classList.remove('hidden');
-            renderCalendar(); 
+            renderCalendar();
         });
 
-        // Navigate to Project Manager 
+        // Navigate to Project Manager
         launchProjectBtn.addEventListener('click', () => {
             appsDashboard.classList.add('hidden');
             calendarSection.classList.add('hidden');
             projectManagerSection.classList.remove('hidden');
-            renderProjects(); 
+            renderProjects();
         });
 
         // Back button from Calendar
@@ -365,8 +386,8 @@
             calendarSection.classList.add('hidden');
             appsDashboard.classList.remove('hidden');
         });
-        
-        // Back button from Project Manager 
+
+        // Back button from Project Manager
         backToDashboardBtn2.addEventListener('click', () => {
             projectManagerSection.classList.add('hidden');
             appsDashboard.classList.remove('hidden');
@@ -380,9 +401,9 @@
             calendarGrid.innerHTML = '';
             const month = currentDate.getMonth();
             const year = currentDate.getFullYear();
-            
+
             monthYearEl.textContent = currentDate.toLocaleDateString('default', { month: 'long', year: 'numeric' });
-            
+
             const firstDayOfMonth = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
@@ -393,7 +414,7 @@
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const dayEvents = events.filter(e => e.date === dateStr);
-                
+
                 let eventsHtml = '';
                 if (dayEvents.length > 0) {
                     eventsHtml = `<div class="mt-1 text-left text-xs space-y-1">`;
@@ -408,9 +429,9 @@
 
                 const today = new Date();
                 const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-                
+
                 let dayClasses = 'border border-gray-300 rounded-lg p-2 sm:p-3 flex flex-col day-cell cursor-pointer transition hover:shadow-lg hover:border-teal-400 bg-white';
-                if(isToday) dayClasses += ' border-teal-500 ring-2 ring-teal-300 bg-teal-50/50';
+                if(isToday) dayClasses += ' border-teal-500 ring-2 ring-300 bg-teal-50/50'; // Fixed ring-300 to ring-teal-300
 
                 calendarGrid.insertAdjacentHTML('beforeend', `
                     <div class="${dayClasses}" data-date="${dateStr}">
@@ -431,7 +452,7 @@
             currentDate.setMonth(currentDate.getMonth() + 1);
             renderCalendar();
         });
-        
+
         calendarGrid.addEventListener('click', (e) => {
             if (e.target.classList.contains('delete-event-btn')) {
                 eventToDeleteId = e.target.dataset.id;
@@ -450,12 +471,12 @@
 
         closeModalBtn.addEventListener('click', () => eventModal.classList.add('hidden'));
         saveEventBtn.addEventListener('click', addEvent);
-        
+
         cancelConfirmBtn.addEventListener('click', () => {
             eventToDeleteId = null;
             confirmModal.classList.add('hidden');
         });
-        
+
         confirmDeleteBtn.addEventListener('click', () => {
             if (eventToDeleteId) {
                 deleteEvent(eventToDeleteId);
@@ -464,26 +485,26 @@
             confirmModal.classList.add('hidden');
         });
 
-        // --- CALENDAR FIRESTORE FUNCTIONS (UNCHANGED) ---
+        // --- CALENDAR REALTIME DATABASE FUNCTIONS ---
         async function addEvent() {
             const title = eventTitleInput.value.trim();
-            if (!db || !auth) {
+            if (!database || !auth) { // Use 'database'
                  showNotification("Cannot save event. Database connection failed.");
                  return;
             }
             if (title && selectedDate) {
                 try {
                     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                    const eventsCollection = collection(db, `/artifacts/${appId}/public/data/calendarEvents`);
-                    await addDoc(eventsCollection, {
+                    const eventsDbRef = ref(database, `/artifacts/${appId}/public/data/calendarEvents`);
+                    await push(eventsDbRef, { // Use push and set for RTDB
                         date: selectedDate,
                         title: title,
-                        createdAt: serverTimestamp()
+                        createdAt: rtdbServerTimestamp() // Use RTDB's server timestamp
                     });
                     eventModal.classList.add('hidden');
                     showNotification("Event added successfully!", false);
                 } catch (e) {
-                    console.error("Error adding document: ", e);
+                    console.error("Error adding event to RTDB: ", e);
                     showNotification("Failed to add event: Connection error.");
                 }
             } else if (!title) {
@@ -492,16 +513,17 @@
         }
 
         async function deleteEvent(eventId) {
-            if (!db || !auth) {
+            if (!database || !auth) { // Use 'database'
                  showNotification("Cannot delete event. Database connection failed.");
                  return;
             }
              try {
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                await deleteDoc(doc(db, `/artifacts/${appId}/public/data/calendarEvents`, eventId));
+                const eventItemRef = ref(database, `/artifacts/${appId}/public/data/calendarEvents/${eventId}`);
+                await remove(eventItemRef); // Use remove for RTDB
                 showNotification("Event deleted successfully!", false);
             } catch (e) {
-                console.error("Error deleting document: ", e);
+                console.error("Error deleting event from RTDB: ", e);
                 showNotification("Failed to delete event: Connection error.");
             }
         }
@@ -550,26 +572,26 @@
             }
         });
 
-        // --- PROJECT MANAGER FIRESTORE FUNCTIONS (UNCHANGED) ---
+        // --- PROJECT MANAGER REALTIME DATABASE FUNCTIONS ---
         async function addProject() {
             const title = projectTaskInput.value.trim();
-            if (!db || !auth) {
+            if (!database || !auth) { // Use 'database'
                  showNotification("Cannot save task. Database connection failed.");
                  return;
             }
             if (title) {
                 try {
                     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                    const projectsCollection = collection(db, `/artifacts/${appId}/public/data/projects`);
-                    await addDoc(projectsCollection, {
+                    const projectsDbRef = ref(database, `/artifacts/${appId}/public/data/projects`);
+                    await push(projectsDbRef, { // Use push and set for RTDB
                         title: title,
                         completed: false,
-                        createdAt: serverTimestamp()
+                        createdAt: rtdbServerTimestamp() // Use RTDB's server timestamp
                     });
                     projectTaskInput.value = '';
                     showNotification("Task added successfully!", false);
                 } catch (e) {
-                    console.error("Error adding project: ", e);
+                    console.error("Error adding project to RTDB: ", e);
                     showNotification("Failed to add task: Connection error.");
                 }
             } else {
@@ -578,38 +600,38 @@
         }
 
         async function deleteProject(projectId) {
-            if (!db || !auth) {
+            if (!database || !auth) { // Use 'database'
                  showNotification("Cannot delete task. Database connection failed.");
                  return;
             }
              try {
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                await deleteDoc(doc(db, `/artifacts/${appId}/public/data/projects`, projectId));
+                const projectItemRef = ref(database, `/artifacts/${appId}/public/data/projects/${projectId}`);
+                await remove(projectItemRef); // Use remove for RTDB
                 showNotification("Task deleted successfully!", false);
             } catch (e) {
-                console.error("Error deleting project: ", e);
+                console.error("Error deleting project from RTDB: ", e);
                 showNotification("Failed to delete task: Connection error.");
             }
         }
 
         async function toggleProjectCompleted(projectId, completedStatus) {
-            if (!db || !auth) {
+            if (!database || !auth) { // Use 'database'
                  showNotification("Cannot update task. Database connection failed.");
                  return;
             }
             try {
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                const projectRef = doc(db, `/artifacts/${appId}/public/data/projects`, projectId);
-                await updateDoc(projectRef, {
+                const projectItemRef = ref(database, `/artifacts/${appId}/public/data/projects/${projectId}`);
+                await update(projectItemRef, { // Use update for RTDB
                     completed: completedStatus
                 });
                 // No notification needed for a simple toggle, as the snapshot listener handles the UI update
             } catch (e) {
-                console.error("Error toggling completion: ", e);
+                console.error("Error toggling completion in RTDB: ", e);
                 showNotification("Failed to update task status: Connection error.");
             }
         }
-
 
         // Initialize the app on page load
         initializeFirebase();
